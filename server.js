@@ -38,12 +38,17 @@ app.post('/insert',(req,res)=>{
     console.log(req.body);
     const users = [];
     database.query(`SELECT username FROM beetle_nut WHERE Pincode_covered like ?`,pin,(err,result)=>{
-        if(err) throw err
+        if(err) console.log(err);
         for(let i=0;i<result.length;i++){
             users.push(String(result[i].username))
         }
+        if(users.length===0){
+            database.query(`INSERT INTO alerts(client,client_email,branch_pin,date) VALUES(?,?,?,CURRENT_TIMESTAMP);`,[name,email,req.body.pin],(err,result)=>{
+                if(err) throw err;
+            })
+        }
         users.forEach(ele=>{
-            database.query(`INSERT INTO alerts(branch_id,client,client_email,branch_username,date) VALUES((SELECT id FROM beetle_nut WHERE username=?),?,?,(SELECT username FROM beetle_nut WHERE username=?),CURRENT_TIMESTAMP);`,[ele,name,email,ele],(err,result)=>{
+            database.query(`INSERT INTO alerts(branch_id,client,client_email,branch_pin,date,branch_username) VALUES((SELECT id FROM beetle_nut WHERE username=?),?,?,?,CURRENT_TIMESTAMP,(SELECT username FROM beetle_nut WHERE username=?));`,[ele,name,email,req.body.pin,ele],(err,result)=>{
                 if(err) throw err;
             })
         })
@@ -83,7 +88,7 @@ app.post('/details',(req,res)=>{
     })
 })
 app.get('/admin',(req,res)=>{
-    database.query(`SELECT * FROM alerts`,(err,result)=>{
+    database.query(`SELECT * FROM alerts ORDER BY date DESC`,(err,result)=>{
         if(err) throw err;
         res.send(result)
     })
