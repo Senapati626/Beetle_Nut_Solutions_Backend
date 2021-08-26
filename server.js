@@ -10,21 +10,26 @@ const io = require('socket.io')(server);
 app.use(cors()); // Used to remove cors error.
 app.use(express.json())
 
+const db_config = {
+    host: "sql6.freemysqlhosting.net",
+    user: "sql6432958",
+    password: "mYKPVAIgR9",
+    database: "sql6432958",
+    waitForConnection: true,
+    port: 3306
+}
 //Storing mysql database inside the 'databass' variable;
-const database = mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: "",
-    database: "beetle_nut"
-});
+const database = mysql.createConnection(db_config);
 
 //Connecting the database with my server.js
 database.connect((err)=>{
     if(err){
-        throw err
+        console.log('cannot connect to database');
     }
     console.log("connected to database beetle_nut.");
 })
+
+
 
 app.get('/',(req,res)=>{
     res.send('BeatleNuts are online.')
@@ -33,10 +38,15 @@ app.get('/',(req,res)=>{
 //Post request showing all branches from the beetle_nut table which matches the pin code inputted by user.
 app.post('/shows',(req,res)=>{
     const pin = '%'+req.body.pin+'%';
+    try{
     database.query(`SELECT * FROM beetle_nut WHERE Pincode_covered like ?`,pin,(err,result)=>{
         if(err) throw err
-        res.send(result)
+        res.send(result);
     });
+    }
+    catch(err){
+        console.log(err)
+    }
 })
 
 // Post request to insert client details inside the alerts.
