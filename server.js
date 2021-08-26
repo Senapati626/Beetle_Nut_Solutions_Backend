@@ -121,8 +121,8 @@ app.get('/admin',(req,res)=>{
         res.send(result)
     })
 })
-server.listen(3001, () => {
-    console.log('app is running on port 3001')
+server.listen(process.env.PORT || 3001, () => {
+    console.log(`app is running on port ${process.env.PORT}`)
 })
 
 // The socket.io connection
