@@ -11,10 +11,10 @@ app.use(cors()); // Used to remove cors error.
 app.use(express.json())
 
 const db_config = {
-    host: "sql6.freemysqlhosting.net",
-    user: "sql6432958",
-    password: "mYKPVAIgR9",
-    database: "sql6432958",
+    host: "localhost",
+    user: "root",
+    password: "",
+    database: "beetle_nut",
     waitForConnection: true,
     port: 3306
 }
